@@ -107,6 +107,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     @Override
     protected void onPostExecute(String[] strings) {
         super.onPostExecute(strings);
+        if (fragment == null) {
+            return;
+        }
+
         fragment.updateAdapter(strings);
     }
 
