@@ -15,9 +15,10 @@ import android.widget.ListView;
  * Created by Angie on 27/07/2015.
  */
 public class ForecastFragment extends Fragment {
-    String[] weather = {"Today Sunny", "Yesterday ", "Last week"};
-    ArrayAdapter<String> adapter;
-    ListView list;
+
+    private ArrayAdapter<String> adapter;
+
+    private ListView list;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,12 +29,8 @@ public class ForecastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        list = (ListView) rootView.findViewById(R.id.listView_forecast);
-        adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, weather);
-        list.setAdapter(adapter);
-        return rootView;
+        callService();
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
     @Override
@@ -53,7 +50,18 @@ public class ForecastFragment extends Fragment {
     }
 
     private void callService() {
-        FetchWeatherTask task = new FetchWeatherTask();
+        FetchWeatherTask task = new FetchWeatherTask(this);
         task.execute("94043");
     }
+
+    public void updateAdapter(String[] weather) {
+        if (weather == null || weather.length == 0) {
+            return;
+        }
+
+        adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview,weather);
+        list = (ListView) getView().findViewById(R.id.listView_forecast);
+        list.setAdapter(adapter);
+    }
+
 }
