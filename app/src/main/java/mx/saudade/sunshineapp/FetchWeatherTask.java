@@ -1,24 +1,34 @@
 package mx.saudade.sunshineapp;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
  * Created by Angie on 27/07/2015.
  */
-public class FetchWeatherTask extends AsyncTask {
+public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
     private String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
     @Override
-    protected Object doInBackground(Object[] params) {
+    protected Void doInBackground(String... params) {
+
+        if (params == null || params.length != 1) {
+            return null;
+        }
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -32,10 +42,10 @@ public class FetchWeatherTask extends AsyncTask {
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
+            //http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7
 
             // Create the request to OpenWeatherMap, and open the connection
-            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection = (HttpURLConnection) getUrl(params[0]).openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
@@ -63,7 +73,7 @@ public class FetchWeatherTask extends AsyncTask {
             forecastJsonStr = buffer.toString();
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
+            Log.e(LOG_TAG, "Error " + e.toString(), e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
             return null;
@@ -80,6 +90,34 @@ public class FetchWeatherTask extends AsyncTask {
             }
         }
 
+        Log.v(LOG_TAG, forecastJsonStr);
         return null;
+    }
+
+    private URL getUrl(String postalCode) throws MalformedURLException {
+
+        String original = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
+
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http://api.openweathermap.org/data/2.5/forecast/daily");
+        builder.appendQueryParameter("q",postalCode);
+        builder.appendQueryParameter("mode","json");
+        builder.appendQueryParameter("units", "metric");
+        builder.appendQueryParameter("cnt", "7");
+
+        original = builder.toString();
+        Log.v(LOG_TAG, "URL " + original);
+        return new URL(original);
+    }
+
+
+    public static double getMaxTemperatureForDay(String weatherJsonStr, int dayIndex)
+            throws JSONException {
+
+        JSONObject json = new JSONObject(weatherJsonStr);
+        JSONArray list = json.getJSONArray("list");
+        JSONObject item = list.getJSONObject(dayIndex);
+        JSONObject main = item.getJSONObject("main");
+        return main.getDouble("temp_max");
     }
 }

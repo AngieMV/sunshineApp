@@ -54,6 +54,6 @@ public class ForecastFragment extends Fragment {
 
     private void callService() {
         FetchWeatherTask task = new FetchWeatherTask();
-        task.execute();
+        task.execute("94043");
     }
 }
