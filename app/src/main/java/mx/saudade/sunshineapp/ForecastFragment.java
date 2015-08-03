@@ -2,6 +2,7 @@ package mx.saudade.sunshineapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 /**
  * Created by Angie on 27/07/2015.
@@ -30,9 +30,14 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        callService();
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
@@ -46,15 +51,15 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            callService();
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void callService() {
+    private void updateWeather() {
         FetchWeatherTask task = new FetchWeatherTask(this);
-        task.execute("94043");
+        task.execute(getLocationPreference());
     }
 
     public void updateAdapter(final String[] weather) {
@@ -62,7 +67,7 @@ public class ForecastFragment extends Fragment {
             return;
         }
 
-        adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview,weather);
+        adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, weather);
         list = (ListView) getView().findViewById(R.id.listView_forecast);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,6 +85,17 @@ public class ForecastFragment extends Fragment {
         intent.setClass(getActivity(), DetailActivity.class);
 
         getActivity().startActivity(intent);
+    }
+
+    private String getLocationPreference() {
+        return PreferenceManager
+                .getDefaultSharedPreferences(getActivity())
+                .getString(getString(R.string.pref_location_key)
+                        , getString(R.string.pref_location_default));
+    }
+
+    private String getUnitsPreference() {
+        return null;
     }
 
 }

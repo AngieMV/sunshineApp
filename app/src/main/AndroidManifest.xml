@@ -18,8 +18,14 @@
             </intent-filter>
         </activity>
         <activity
+            android:parentActivityName=".MainActivity"
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail" >
+        </activity>
+        <activity
+            android:parentActivityName=".MainActivity"
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" >
         </activity>
     </application>
 

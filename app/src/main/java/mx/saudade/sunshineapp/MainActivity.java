@@ -1,5 +1,6 @@
 package mx.saudade.sunshineapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -37,10 +38,17 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            launchSettingsActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void launchSettingsActivity() {
+        Intent i = new Intent();
+        i.setClass(this, SettingsActivity.class);
+        startActivity(i);
     }
 
 }

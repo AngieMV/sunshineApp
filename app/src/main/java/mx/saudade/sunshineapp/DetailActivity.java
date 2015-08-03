@@ -40,10 +40,17 @@ public class DetailActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            launchSettingsActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void launchSettingsActivity() {
+        Intent i = new Intent();
+        i.setClass(this, SettingsActivity.class);
+        startActivity(i);
     }
 
     /**
